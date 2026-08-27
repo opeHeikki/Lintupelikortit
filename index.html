@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-2">
+  <title>Lintuvisapeli</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; background: #f4f4f9; padding: 20px; }
+    .grid { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-top: 20px; }
+    .card { background: white; border-radius: 8px; padding: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 180px; cursor: pointer; }
+    .card img { width: 100%; height: 130px; object-fit: contain; border-radius: 4px; }
+    .name { display: none; margin-top: 10px; font-weight: bold; color: #2e7d32; }
+    .revealed .name { display: block; }
+    button { margin-top: 30px; padding: 12px 24px; font-size: 16px; cursor: pointer; background: #2e7d32; color: white; border: none; border-radius: 5px; }
+  </style>
+</head>
+<body>
+
+  <h1>Tunnista lintulaji</h1>
+  <p id="kierros-info"></p>
+  <div class="grid" id="lintu-alue"></div>
+  <button id="seuraava-btn" onclick="seuraavaKierros()">Seuraava kierros</button>
+
+  <script>
+    // 1. Määritetään 35 linnun tiedot (tiedostonimi ja oikea nimi)
+    const kaikkiLinnut = [
+      { kuva: "kuvat/Valkoposkihanhi.jpg", nimi: "Valkoposkihanhi" },
+      { kuva: "kuvat/Kanadanhanhi.jpg", nimi: "Kanadanhanhi" },
+      { kuva: "kuvat/Tundrahanhi.jpg", nimi: "Tundrahanhi" },
+      { kuva: "kuvat/Metsähanhi.jpg", nimi: "Metsähanhi" },
+      { kuva: "kuvat/Laulujoutsen.jpg", nimi: "Laulujoutsen" },
+      { kuva: "kuvat/Kyhmyjoutsen.jpg", nimi: "Kyhmyjoutsen" },
+      { kuva: "kuvat/Kuikka.jpg", nimi: "Kuikka" },
+      { kuva: "kuvat/Sinisorsa koiras.jpg", nimi: "Sinisorsa koiras" },
+      { kuva: "kuvat/Sinisorsa naaras.jpg", nimi: "Sinisorsa naaras" },
+      { kuva: "kuvat/Telkkä koiras.jpg", nimi: "Telkkä koiras" },
+      { kuva: "kuvat/Telkkä naaras.jpg", nimi: "Telkkä naaras" },
+      { kuva: "kuvat/Kurki.jpg", nimi: "Kurki" },
+      { kuva: "kuvat/Töyhtöhyyppä.jpg", nimi: "Töyhtöhyyppä" },
+      { kuva: "kuvat/Kuovi.jpg", nimi: "Kuovi" },
+      { kuva: "kuvat/Rantasipi.jpg", nimi: "Rantasipi" },
+      { kuva: "kuvat/Naurulokki.jpg", nimi: "Naurulokki" },
+      { kuva: "kuvat/Kalalokki.jpg", nimi: "Kalalokki" },
+      { kuva: "kuvat/Harmaalokki.jpg", nimi: "Harmaalokki" },
+      { kuva: "kuvat/Kalatiira.jpg", nimi: "Kalatiira" },
+      { kuva: "kuvat/Merikotka.jpg", nimi: "Merikotka" },
+      { kuva: "kuvat/Silkkiuikku.jpg", nimi: "Silkkiuikku" },
+      { kuva: "kuvat/Lehtokurppa.jpg", nimi: "Lehtokurppa" },
+      { kuva: "kuvat/Tavi.jpg", nimi: "Tavi" },
+      { kuva: "kuvat/Harmaahaikara.jpg", nimi: "Harmaahaikara" },
+      { kuva: "kuvat/Tukkasotka.jpg", nimi: "Tukkasotka" },
+      { kuva: "kuvat/Isokoskelo.jpg", nimi: "Isokoskelo" },
+      { kuva: "kuvat/Nokikana.jpg", nimi: "Nokikana" },
+      { kuva: "kuvat/Liro.jpg", nimi: "Liro" },
+      { kuva: "kuvat/Metsäviklo.jpg", nimi: "Metsäviklo" },
+      { kuva: "kuvat/Ruokokerttunen.jpg", nimi: "Ruokokerttunen" },
+      { kuva: "kuvat/Pajusirkku.jpg", nimi: "Pajusirkku" },
+      { kuva: "kuvat/Sääksi.jpg", nimi: "Sääksi" }, 
+      { kuva: "kuvat/Haahka.jpg", nimi: "Haahka" },
+      { kuva: "kuvat/Merimetso.jpg", nimi: "Merimetso" },
+      { kuva: "kuvat/Merilokki.jpg", nimi: "Merilokki" },     
+      // ... Lisää tähän loput lajit samassa muodossa
+    ];
+
+    let sekoitetutLinnut = [];
+    let nykyinenKierros = 0;
+
+    function aloitaPeli() {
+      // Sekoitetaan taulukko Fisher-Yates -algortimilla (ei toistoja)
+      sekoitetutLinnut = [...kaikkiLinnut].sort(() => Math.random() - 0.5);
+      nykyinenKierros = 0;
+      naytaKierros();
+    }
+
+    function naytaKierros() {
+      const alue = document.getElementById("lintu-alue");
+      alue.innerHTML = "";
+      
+      const aloitusIndex = nykyinenKierros * 5;
+      const kierroksenLinnut = sekoitetutLinnut.slice(aloitusIndex, aloitusIndex + 5);
+
+      document.getElementById("kierros-info").innerText = `Kierros ${nykyinenKierros + 1} / 7`;
+
+      kierroksenLinnut.forEach(lintu => {
+        const kortti = document.createElement("div");
+        kortti.className = "card";
+        kortti.onclick = () => kortti.classList.toggle("revealed");
+        kortti.innerHTML = `
+          <img src="${lintu.kuva}" alt="Lintu">
+          <div class="name">${lintu.nimi}</div>
+        `;
+        alue.appendChild(kortti);
+      });
+    }
+
+    function seuraavaKierros() {
+      nykyinenKierros++;
+      if (nykyinenKierros < 7) {
+        naytaKierros();
+      } else {
+        alert("Peli päättyi! Kävit läpi kaikki 35 lintua.");
+        aloitaPeli();
+      }
+    }
+
+    aloitaPeli();
+  </script>
+</body>
+</html>
